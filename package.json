@@ -1,0 +1,29 @@
+{
+  "name": "md-mini",
+  "version": "0.0.1",
+  "description": "Minimum Material Design CSS Framework specially build for AMP (Accelerate Mobile Page)",
+  "main": "index.js",
+  "scripts": {
+    "test": "ava"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yiyuan-to1source/md-mini.git"
+  },
+  "keywords": [
+    "Material",
+    "Design",
+    "CSS",
+    "SASS",
+    "css",
+    "framework",
+    "node",
+    "gulp"
+  ],
+  "author": "to1source",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yiyuan-to1source/md-mini/issues"
+  },
+  "homepage": "https://github.com/yiyuan-to1source/md-mini#readme"
+}
