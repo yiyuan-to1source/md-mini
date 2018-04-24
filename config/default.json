@@ -1,0 +1,7 @@
+{
+  "paths": {
+    "src": "src",
+    "dist": "dist",
+    "dev": ".dev"
+  }
+}
