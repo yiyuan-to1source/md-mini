@@ -39,6 +39,7 @@ const sassTask = build => {
 const serve = () => {
   return gulp.src([
     join(__dirname, paths.dest),
+    join(__dirname, 'demo'),
     join(__dirname)
   ]).pipe(
     server()
