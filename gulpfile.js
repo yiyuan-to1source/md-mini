@@ -13,44 +13,43 @@ const autoprefixer = require('autoprefixer');
 const cssnano = require('cssnano');
 const config = require('config');
 const { join } = require('path');
-
+// get from config
 const paths = config.get('paths');
+// task 1
+gulp.task('sass', () => {
+  return gulp.src(join(__dirname, paths.src, 'md-mini.scss'))
+    .pipe(sourcemaps.init())
+    .pipe( sass({
+      includePaths: join(process.cwd(), 'node_modules')
+    }).on('error', sass.logError) )
+    .pipe(postcss([
+      autoprefixer,
+      cssnano
+    ]))
+    .pipe(rename('md-mini.min.css'))
+    .pipe(sourcemaps.write('./'))
+    .pipe(gulp.dest(
+      join(__dirname, paths.dest)
+    ));
+});
 
-const sassTask = build => {
-  return () => {
-    const dest = build ? paths.dest : paths.dev;
-    const dir = join(__dirname, dest);
-    // console.log('style dir', dir);
-    return gulp.src(join(__dirname, paths.src, 'md-mini.scss'))
-      .pipe(sourcemaps.init())
-      .pipe( sass({
-        includePaths: join(process.cwd(), 'node_modules')
-      }).on('error', sass.logError) )
-      .pipe(postcss([
-        autoprefixer,
-        cssnano
-      ]))
-      .pipe(rename('md-mini.min.css'))
-      .pipe(sourcemaps.write('./'))
-      .pipe(gulp.dest(dir));
-  };
-};
-
+/*
 const serve = () => {
   return gulp.src([
     join(__dirname, paths.dest),
     join(__dirname, 'demo'),
-    join(__dirname)
+    __dirname
   ]).pipe(
     server()
   );
 };
+*/
 
+/*
 gulp.task('watch', done => {
-  gulp.watch(join(__dirname, paths.src, '**', '*.scss'), ['build']);
+  gulp.watch(join(__dirname, paths.src, '**', '*.scss'), gulp.series('sass'));
   done();
 });
 
-gulp.task('build', gulp.serires(sassTask(true)));
-
-gulp.task('default', gulp.series('build', 'build', serve()));
+gulp.task('dev', gulp.series('sass', 'watch', serve()));
+*/
