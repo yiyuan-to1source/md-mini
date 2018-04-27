@@ -3,7 +3,6 @@
  * The main gulp file for dev
  */
 const gulp = require('gulp');
-const sass = require('gulp-sass');
 const postcss = require('gulp-postcss');
 const sourcemaps = require('gulp-sourcemaps');
 const rename = require('gulp-rename');
@@ -16,13 +15,16 @@ const { join } = require('path');
 // get from config
 const paths = config.get('paths');
 const pkg = require(join(__dirname, 'package.json'));
-// wrap the sass fn
-const sassFn = dest => () => {
-  return gulp.src(join(__dirname, paths.src, 'md-mini.scss'))
+
+/**
+ * Using LESS
+ */
+const lessFn = dest => () => {
+  return gulp.src(join(__dirname, paths.src, 'md-mini.less'))
     .pipe(sourcemaps.init())
-    .pipe( sass({
-      includePaths: join(process.cwd(), 'node_modules')
-    }).on('error', sass.logError) )
+    .pipe(less({
+      paths: [join(__dirname, 'src', 'less')]
+    }))
     .pipe(postcss([
       autoprefixer,
       cssnano
@@ -32,15 +34,9 @@ const sassFn = dest => () => {
     .pipe(gulp.dest(dest));
 };
 
-const lessFn = dest => () => {
-  return gulp.src(join(__dirname, paths.src, 'md-mini.less'))
-    .pipe(sourcemaps.init())
-    .pipe(less())
-}
-
 // dev sass task
-gulp.task('sass:dev', sassFn(join(__dirname, paths.dev)));
-gulp.task('sass:build', sassFn(join(__dirname, paths.dest)));
+gulp.task('less:dev', sassFn(join(__dirname, paths.dev)));
+gulp.task('less:build', sassFn(join(__dirname, paths.dest)));
 
 gulp.task('serve', () => gulp.src([
     join(__dirname, paths.dest),
@@ -51,9 +47,9 @@ gulp.task('serve', () => gulp.src([
 ));
 
 gulp.task('watch', done => {
-  gulp.watch(join(__dirname, paths.src, '**', '*.scss'), gulp.series('sass:dev'));
+  gulp.watch(join(__dirname, paths.src, '**', '*.less'), gulp.series('less:dev'));
   done();
 });
 
-gulp.task('default', gulp.series('sass:dev', 'watch', 'serve'));
-// build task will increment the version semver
+gulp.task('default', gulp.series('less:dev', 'watch', 'serve'));
+// @TODO build task will increment the version semver
