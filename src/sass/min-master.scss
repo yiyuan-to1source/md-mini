@@ -29,8 +29,6 @@ $import-icons:                            true !default;
 
 $import-grid:                             true !default;
 
-$import-ie-hacks:                         false !default;
-
 
 // ------------------------------------------------------------------
 //  Import Components based on above customization
@@ -43,5 +41,4 @@ $import-ie-hacks:                         false !default;
         'forms',
         'navbar',
         'table',
-        'messages',
-        'iehacks';
+        'messages';

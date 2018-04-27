@@ -15,8 +15,9 @@ const { join } = require('path');
 // get from config
 const paths = config.get('paths');
 const pkg = require(join(__dirname, 'package.json'));
-// task 1
-gulp.task('sass', () => gulp.src(join(__dirname, paths.src, 'md-mini.scss'))
+// wrap the sass fn
+const sassFn = dest => () => {
+  return gulp.src(join(__dirname, paths.src, 'md-mini.scss'))
     .pipe(sourcemaps.init())
     .pipe( sass({
       includePaths: join(process.cwd(), 'node_modules')
@@ -27,24 +28,24 @@ gulp.task('sass', () => gulp.src(join(__dirname, paths.src, 'md-mini.scss'))
     ]))
     .pipe(rename('md-mini.min.css'))
     .pipe(sourcemaps.write('./'))
-    .pipe(gulp.dest(
-      join(__dirname, paths.dest)
-)));
+    .pipe(gulp.dest(dest));
+};
+// dev sass task
+gulp.task('sass:dev', sassFn(join(__dirname, paths.dev)));
+gulp.task('sass:build', sassFn(join(__dirname, paths.dest)));
 
 gulp.task('serve', () => gulp.src([
     join(__dirname, paths.dest),
-    join(__dirname, 'demo'),
+    join(__dirname, paths.dev),
     __dirname
   ]).pipe(
-    server()
+    server({debugger: false})
 ));
 
-
-/*
 gulp.task('watch', done => {
-  gulp.watch(join(__dirname, paths.src, '**', '*.scss'), gulp.series('sass'));
+  gulp.watch(join(__dirname, paths.src, '**', '*.scss'), gulp.series('sass:dev'));
   done();
 });
-*/
 
-gulp.task('default', gulp.series('sass', 'serve'));
+gulp.task('default', gulp.series('sass:dev', 'watch', 'serve'));
+// build task will increment the version semver
