@@ -8,6 +8,7 @@ const postcss = require('gulp-postcss');
 const sourcemaps = require('gulp-sourcemaps');
 const rename = require('gulp-rename');
 const server = require('gulp-server-io');
+const less = require('gulp-less');
 const autoprefixer = require('autoprefixer');
 const cssnano = require('cssnano');
 const config = require('config');
@@ -30,6 +31,13 @@ const sassFn = dest => () => {
     .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest(dest));
 };
+
+const lessFn = dest => () => {
+  return gulp.src(join(__dirname, paths.src, 'md-mini.less'))
+    .pipe(sourcemaps.init())
+    .pipe(less())
+}
+
 // dev sass task
 gulp.task('sass:dev', sassFn(join(__dirname, paths.dev)));
 gulp.task('sass:build', sassFn(join(__dirname, paths.dest)));
