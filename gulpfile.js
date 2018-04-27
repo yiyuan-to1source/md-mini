@@ -3,6 +3,7 @@
  * The main gulp file for dev
  */
 const gulp = require('gulp');
+const clean = require('gulp-clean');
 const postcss = require('gulp-postcss');
 const sourcemaps = require('gulp-sourcemaps');
 const rename = require('gulp-rename');
@@ -15,6 +16,17 @@ const { join } = require('path');
 // get from config
 const paths = config.get('paths');
 const pkg = require(join(__dirname, 'package.json'));
+
+
+// clean files first
+gulp.task('clean:dev', () => gulp.src(join(__dirname, paths.dev), {read:false})
+  .pipe(clean())
+);
+// copy html
+gulp.task('html:dev', () => gulp.src(join(__dirname, 'index.html'))
+  .pipe(gulp.dest())
+);
+
 
 /**
  * Using LESS
@@ -35,13 +47,11 @@ const lessFn = dest => () => {
 };
 
 // dev sass task
-gulp.task('less:dev', sassFn(join(__dirname, paths.dev)));
-gulp.task('less:build', sassFn(join(__dirname, paths.dest)));
+gulp.task('less:dev', lessFn(join(__dirname, paths.dev)));
+gulp.task('less:build', lessFn(join(__dirname, paths.dest)));
 
 gulp.task('serve', () => gulp.src([
-    join(__dirname, paths.dest),
-    join(__dirname, paths.dev),
-    __dirname
+    join(__dirname, paths.dev)
   ]).pipe(
     server({debugger: false})
 ));
