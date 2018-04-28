@@ -9,6 +9,7 @@ const sourcemaps = require('gulp-sourcemaps');
 const rename = require('gulp-rename');
 const server = require('gulp-server-io');
 const less = require('gulp-less');
+const inject = require('gulp-inject');
 const autoprefixer = require('autoprefixer');
 const cssnano = require('cssnano');
 const config = require('config');
@@ -22,10 +23,19 @@ gulp.task('clean:dev', () => gulp.src(join(__dirname, paths.dev), {read:false})
   .pipe(clean())
 );
 // copy html
-gulp.task('html:dev', () => gulp.src(join(__dirname, 'index.html'))
-  .pipe(gulp.dest())
-);
+gulp.task('html:dev', () => {
+  const sources = gulp.src([join(__dirname, paths.dev,'**', '*.css')], {read: false});
+  return gulp.src(join(__dirname, paths.demo, 'index.html'))
+    .pipe(inject(sources))
+    .pipe(gulp.dest(join(__dirname, paths.dev)));
+});
 
+gulp.task('html:build', () => {
+  const sources = gulp.src([join(__dirname, paths.demo, '**', '*.css')], {read: false});
+  return gulp.src(join(__dirname, paths.demo, 'index.html'))
+    .pipe(inject(sources))
+    .pipe(gulp.dest(join(__dirname)));
+});
 
 /**
  * Using LESS
@@ -34,7 +44,7 @@ const lessFn = dest => () => {
   return gulp.src(join(__dirname, paths.src, 'md-mini.less'))
     .pipe(sourcemaps.init())
     .pipe(less({
-      paths: [join(__dirname, 'src', 'less')]
+      paths: [join(__dirname, paths.src, 'less')]
     }))
     .pipe(postcss([
       autoprefixer,
@@ -48,17 +58,19 @@ const lessFn = dest => () => {
 // dev sass task
 gulp.task('less:dev', lessFn(join(__dirname, paths.dev)));
 gulp.task('less:build', lessFn(join(__dirname, paths.dest)));
-
+// serve dev
 gulp.task('serve', () => gulp.src([
     join(__dirname, paths.dev)
   ]).pipe(
     server({debugger: false})
 ));
-
+// watching
 gulp.task('watch', done => {
   gulp.watch(join(__dirname, paths.src, '**', '*.less'), gulp.series('less:dev'));
+  gulp.watch(join(__dirname, paths.demo, 'index.html'), gulp.serires('html:dev'));
   done();
 });
-
-gulp.task('default', gulp.series('less:dev', 'watch', 'serve'));
+// trigger
+gulp.task('default', gulp.series('less:dev', 'html:dev' ,'watch', 'serve'));
 // @TODO build task will increment the version semver
+gulp.task('build', gulp.series('less:build', 'html:build'));

@@ -2,6 +2,7 @@
   "paths": {
     "src": "src",
     "dest": "dist",
-    "dev": ".dev"
+    "dev": ".dev",
+    "demo": "demo"
   }
 }
