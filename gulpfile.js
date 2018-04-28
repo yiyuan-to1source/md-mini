@@ -17,7 +17,6 @@ const { join } = require('path');
 const paths = config.get('paths');
 const pkg = require(join(__dirname, 'package.json'));
 
-
 // clean files first
 gulp.task('clean:dev', () => gulp.src(join(__dirname, paths.dev), {read:false})
   .pipe(clean())
