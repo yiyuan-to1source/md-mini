@@ -67,7 +67,7 @@ gulp.task('serve', () => gulp.src([
 // watching
 gulp.task('watch', done => {
   gulp.watch(join(__dirname, paths.src, '**', '*.less'), gulp.series('less:dev'));
-  gulp.watch(join(__dirname, paths.demo, 'index.html'), gulp.serires('html:dev'));
+  gulp.watch(join(__dirname, paths.demo, 'index.html'), gulp.series('html:dev'));
   done();
 });
 // trigger
