@@ -26,14 +26,14 @@ gulp.task('clean:dev', () => gulp.src(join(__dirname, paths.dev), {read:false})
 gulp.task('html:dev', () => {
   const sources = gulp.src([join(__dirname, paths.dev,'**', '*.css')], {read: false});
   return gulp.src(join(__dirname, paths.demo, 'index.html'))
-    .pipe(inject(sources))
+    .pipe(inject(sources, {ignorePath: paths.dev}))
     .pipe(gulp.dest(join(__dirname, paths.dev)));
 });
 
 gulp.task('html:build', () => {
   const sources = gulp.src([join(__dirname, paths.demo, '**', '*.css')], {read: false});
   return gulp.src(join(__dirname, paths.demo, 'index.html'))
-    .pipe(inject(sources))
+    .pipe(inject(sources, {relative: true}))
     .pipe(gulp.dest(join(__dirname)));
 });
 
