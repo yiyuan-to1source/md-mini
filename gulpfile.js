@@ -2,6 +2,7 @@
 /**
  * The main gulp file for dev
  */
+const fs = require('fs');
 const gulp = require('gulp');
 const clean = require('gulp-clean');
 const postcss = require('gulp-postcss');
@@ -17,6 +18,13 @@ const { join } = require('path');
 // get from config
 const paths = config.get('paths');
 const pkg = require(join(__dirname, 'package.json'));
+// checking the size of the file
+gulp.task('checksize', done =>  {
+  fs.stat(join(__dirname, paths.dev, 'md-mini.min.css'), (err, stats) => {
+    console.log('md-mini.min.css size: ', stats.size);
+  });
+  done();
+});
 
 // clean files first
 gulp.task('clean:dev', () => gulp.src(join(__dirname, paths.dev), {read:false})
@@ -71,6 +79,6 @@ gulp.task('watch', done => {
   done();
 });
 // trigger
-gulp.task('default', gulp.series('less:dev', 'html:dev' ,'watch', 'serve'));
+gulp.task('default', gulp.series('less:dev', 'html:dev', 'checksize', 'watch', 'serve'));
 // @TODO build task will increment the version semver
 gulp.task('build', gulp.series('less:build', 'html:build'));
