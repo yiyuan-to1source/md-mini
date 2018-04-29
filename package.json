@@ -5,7 +5,8 @@
   "main": "src/md-mini.less",
   "browser": "dist/md-mini.min.css",
   "scripts": {
-    "test": "ava"
+    "test": "ava",
+    "dev": "DEBUG=gulp-server-io:main,gulp-server-io:stream-watcher gulp"
   },
   "repository": {
     "type": "git",
