@@ -20,7 +20,7 @@ const paths = config.get('paths');
 const pkg = require(join(__dirname, 'package.json'));
 // checking the size of the file
 gulp.task('checksize', done =>  {
-  fs.stat(join(__dirname, paths.dev, 'md-mini.min.css'), (err, stats) => {
+  fs.stat(join(__dirname, paths.dest, 'md-mini.min.css'), (err, stats) => {
     console.log('md-mini.min.css size: ', parseInt(stats.size,10)/1024 ) ;
   });
   done();
@@ -30,6 +30,10 @@ gulp.task('checksize', done =>  {
 gulp.task('clean:dev', () => gulp.src(join(__dirname, paths.dev), {read:false})
   .pipe(clean())
 );
+gulp.task('clean:dist', () => gulp.src(join(__dirname, paths.dest), {read:false})
+  .pipe(clean())
+);
+
 // copy html
 gulp.task('html:dev', () => {
   const sources = gulp.src([join(__dirname, paths.dev,'**', '*.css')], {read: false});
@@ -49,22 +53,26 @@ gulp.task('html:build', () => {
  * Using LESS
  */
 const lessFn = dest => () => {
+  let plugins = [autoprefixer];
+  let filename = 'md-mini.min.css';
+  if (dest === join(__dirname, paths.dest)) {
+    plugins.push(cssnano);
+  } else {
+    filename = ['md-mini', Date.now(), 'css'].join('.');
+  }
   return gulp.src(join(__dirname, paths.src, 'md-mini.less'))
     .pipe(sourcemaps.init())
     .pipe(less({
       paths: [join(__dirname, paths.src, 'less')]
     }))
-    .pipe(postcss([
-      autoprefixer,
-      cssnano
-    ]))
-    .pipe(rename('md-mini.min.css'))
+    .pipe(postcss(plugins))
+    .pipe(rename(filename))
     .pipe(sourcemaps.write('./'))
     .pipe(gulp.dest(dest));
 };
 
 // dev sass task
-gulp.task('less:dev', gulp.series(lessFn(join(__dirname, paths.dev)), 'checksize'));
+gulp.task('less:dev', gulp.series(lessFn(join(__dirname, paths.dev))));
 gulp.task('less:build', lessFn(join(__dirname, paths.dest)));
 // serve dev
 gulp.task('serve', () => gulp.src([
@@ -74,11 +82,11 @@ gulp.task('serve', () => gulp.src([
 ));
 // watching
 gulp.task('watch', done => {
-  gulp.watch(join(__dirname, paths.src, '**', '*.less'), gulp.series('less:dev'));
+  gulp.watch(join(__dirname, paths.src, '**', '*.less'), gulp.series('clean:dev', 'less:dev', 'html:dev'));
   gulp.watch(join(__dirname, paths.demo, 'index.html'), gulp.series('html:dev'));
   done();
 });
 // trigger
-gulp.task('default', gulp.series('less:dev', 'html:dev', 'watch', 'serve'));
+gulp.task('default', gulp.series('clean:dev', 'less:dev', 'html:dev', 'watch', 'serve'));
 // @TODO build task will increment the version semver
-gulp.task('build', gulp.series('less:build', 'html:build'));
+gulp.task('build', gulp.series('clean:dist', 'less:build', 'html:build', 'checksize'));
