@@ -27,10 +27,10 @@ gulp.task('checksize', done =>  {
 });
 
 // clean files first
-gulp.task('clean:dev', () => gulp.src(join(__dirname, paths.dev), {read:false})
+gulp.task('clean:dev', () => gulp.src(join(__dirname, paths.dev), {read:false, allowEmpty: true})
   .pipe(clean())
 );
-gulp.task('clean:dist', () => gulp.src(join(__dirname, paths.dest), {read:false})
+gulp.task('clean:dist', () => gulp.src(join(__dirname, paths.dest), {read:false, allowEmpty: true})
   .pipe(clean())
 );
 
