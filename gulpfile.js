@@ -21,7 +21,7 @@ const pkg = require(join(__dirname, 'package.json'));
 // checking the size of the file
 gulp.task('checksize', done =>  {
   fs.stat(join(__dirname, paths.dev, 'md-mini.min.css'), (err, stats) => {
-    console.log('md-mini.min.css size: ', stats.size);
+    console.log('md-mini.min.css size: ', parseInt(stats.size,10)/1024 ) ;
   });
   done();
 });
@@ -64,7 +64,7 @@ const lessFn = dest => () => {
 };
 
 // dev sass task
-gulp.task('less:dev', lessFn(join(__dirname, paths.dev)));
+gulp.task('less:dev', gulp.series(lessFn(join(__dirname, paths.dev)), 'checksize'));
 gulp.task('less:build', lessFn(join(__dirname, paths.dest)));
 // serve dev
 gulp.task('serve', () => gulp.src([
@@ -79,6 +79,6 @@ gulp.task('watch', done => {
   done();
 });
 // trigger
-gulp.task('default', gulp.series('less:dev', 'html:dev', 'checksize', 'watch', 'serve'));
+gulp.task('default', gulp.series('less:dev', 'html:dev', 'watch', 'serve'));
 // @TODO build task will increment the version semver
 gulp.task('build', gulp.series('less:build', 'html:build'));
